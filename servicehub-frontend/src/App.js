@@ -1,28 +1,23 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-
 import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
-import AdminBookings from "./pages/admin/Bookings";
-import AdminUsers from "./pages/admin/Users";
-import AdminProviders from "./pages/admin/Providers";
+import Customers from "./pages/admin/Customers";
+import CustomerDetail from "./pages/admin/CustomerDetail";
+import Bookings from "./pages/admin/Bookings";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-
-        {/* PUBLIC ROUTES */}
         <Route path="/" element={<Home />} />
 
-        {/* ADMIN ROUTES */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
-          <Route path="bookings" element={<AdminBookings />} />
-          <Route path="users" element={<AdminUsers />} />
-          <Route path="providers" element={<AdminProviders />} />
+          <Route path="bookings" element={<Bookings />} />
+          <Route path="customers" element={<Customers />} />
+          <Route path="customers/:id" element={<CustomerDetail />} />
         </Route>
-
       </Routes>
     </BrowserRouter>
   );
