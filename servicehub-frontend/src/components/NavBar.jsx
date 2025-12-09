@@ -1,9 +1,13 @@
+import React from "react";
+
 export default function NavBar() {
-    return (
-      <div className="w-full bg-white shadow p-4 flex justify-between items-center">
-        <h1 className="text-xl font-semibold">ServiceHub</h1>
-        <div className="text-gray-600">Admin</div>
+  return (
+    <header className="bg-white shadow-sm px-6 py-3 flex items-center justify-between">
+      <div className="text-xl font-semibold">ServiceHub</div>
+      <div className="flex items-center gap-4">
+        <div className="text-sm text-gray-600">Admin</div>
+        <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center">JD</div>
       </div>
-    );
-  }
-  
+    </header>
+  );
+}
