@@ -1,17 +1,91 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 export default function Sidebar() {
-  return (
-    <aside className="w-64 bg-[#222b33] text-white min-h-screen p-6">
-      <div className="text-2xl font-bold mb-8">Menu</div>
+  const linkClasses =
+    "block px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition";
 
-      <nav className="space-y-3">
-        <Link to="/" className="block py-2 px-3 rounded hover:bg-[#2e3941]">Home</Link>
-        <Link to="/admin" className="block py-2 px-3 rounded hover:bg-[#2e3941]">Admin Dashboard</Link>
-        <Link to="/admin/bookings" className="block py-2 px-3 rounded hover:bg-[#2e3941]">Bookings</Link>
-        <Link to="/admin/customers" className="block py-2 px-3 rounded hover:bg-[#2e3941]">Customers</Link>
-        <Link to="/admin/providers" className="block py-2 px-3 rounded hover:bg-[#2e3941]">Providers</Link>
-      </nav>
-    </aside>
+  const activeClasses =
+    "block px-4 py-2 rounded-lg bg-blue-700 text-white shadow";
+
+  return (
+    <div className="w-64 bg-gray-900 text-gray-200 h-screen p-6">
+      <h2 className="text-2xl font-bold mb-8 tracking-wide">ServiceHub</h2>
+
+      <ul className="space-y-3">
+
+        {/* Home */}
+        <li>
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              isActive ? activeClasses : linkClasses
+            }
+          >
+            Home
+          </NavLink>
+        </li>
+
+        {/* Dashboard */}
+        <li>
+          <NavLink
+            to="/admin"
+            end
+            className={({ isActive }) =>
+              isActive ? activeClasses : linkClasses
+            }
+          >
+            Admin Dashboard
+          </NavLink>
+        </li>
+
+        {/* Bookings Calendar */}
+        <li>
+          <NavLink
+            to="/admin/bookings"
+            className={({ isActive }) =>
+              isActive ? activeClasses : linkClasses
+            }
+          >
+            Bookings (Calendar)
+          </NavLink>
+        </li>
+
+        {/* Bookings List */}
+        <li>
+          <NavLink
+            to="/admin/bookings/list"
+            className={({ isActive }) =>
+              isActive ? activeClasses : linkClasses
+            }
+          >
+            Bookings List
+          </NavLink>
+        </li>
+
+        {/* Customers */}
+        <li>
+          <NavLink
+            to="/admin/customers"
+            className={({ isActive }) =>
+              isActive ? activeClasses : linkClasses
+            }
+          >
+            Customers
+          </NavLink>
+        </li>
+
+        {/* Providers */}
+        <li>
+          <NavLink
+            to="/admin/providers"
+            className={({ isActive }) =>
+              isActive ? activeClasses : linkClasses
+            }
+          >
+            Providers
+          </NavLink>
+        </li>
+      </ul>
+    </div>
   );
 }
