@@ -5,6 +5,9 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import Customers from "./pages/admin/Customers";
 import CustomerDetail from "./pages/admin/CustomerDetail";
 import Bookings from "./pages/admin/Bookings";
+import AdminBookingsPage from "./pages/admin/BookingsCalendar"; // adjust path/name
+
+
 
 function App() {
   return (
