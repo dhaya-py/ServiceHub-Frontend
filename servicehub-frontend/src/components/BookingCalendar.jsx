@@ -1,81 +1,82 @@
 // src/components/BookingCalendar.jsx
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { Calendar } from "react-big-calendar";
-import { parseISO, format } from "date-fns";
-import { enUS, enGB } from "date-fns/locale";
+import {
+  parseISO,
+  format,
+  startOfWeek,
+  getDay
+} from "date-fns";
+import { enUS } from "date-fns/locale";
 import { dateFnsLocalizer } from "react-big-calendar";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
-// Date-fns locales
+// REQUIRED date-fns localizer config
 const locales = {
   "en-US": enUS,
-  "en-GB": enGB,
 };
 
-// Localizer for react-big-calendar (date-fns version)
 const localizer = dateFnsLocalizer({
   format,
-  parse: (str) => parseISO(str),
-  startOfWeek: () => 1, // Monday
-  getDay: (date) => date.getDay(),
+  parse: (value) => {
+    // FIX 1 — If value is already a Date, return it
+    if (value instanceof Date) return value;
+
+    // FIX 2 — If value is ISO string, parse it safely
+    if (typeof value === "string") {
+      const parsed = parseISO(value);
+      if (!isNaN(parsed)) return parsed;
+    }
+
+    // FIX 3 — fallback = today (prevents crash)
+    return new Date();
+  },
+  startOfWeek: (date) => startOfWeek(date, { locale: enUS }),
+  getDay: (date) => getDay(date),
   locales,
 });
 
-/**
- * bookings: array of backend booking objects, each with:
- *  id, service_name, booking_date, booking_time, duration_minutes,
- *  status, customer_name, provider_id, provider_name, amount
- */
-export default function BookingCalendar({
-  bookings = [],
-  onSelectEvent,
-  defaultView = "week",
-}) {
-  // Convert API bookings → Calendar events
+export default function BookingCalendar({ bookings }) {
   const events = useMemo(() => {
-    return bookings.map((b) => {
-      let start, end;
+    return bookings
+      .map((b) => {
+        try {
+          const start = parseISO(
+            b.start_iso ?? `${b.booking_date}T${b.booking_time || "09:00:00"}`
+          );
 
-      if (b.start_iso) {
-        // If backend provides ISO dates
-        start = parseISO(b.start_iso);
-        end = b.end_iso ? parseISO(b.end_iso) : new Date(start.getTime() + ((b.duration_minutes || 60) * 60000));
-      } else {
-        // Construct from booking_date + booking_time
-        const dt = `${b.booking_date}T${b.booking_time || "09:00:00"}`;
-        start = parseISO(dt);
-        end = new Date(start.getTime() + ((b.duration_minutes || 60) * 60000));
-      }
+          const end = b.end_iso
+            ? parseISO(b.end_iso)
+            : new Date(start.getTime() + (b.duration_minutes || 60) * 60000);
 
-      return {
-        id: b.id,
-        title: `${b.service_name} — ${b.customer_name ?? "Customer"}`,
-        start,
-        end,
-        booking: b,
-        status: b.status,
-      };
-    });
+          if (isNaN(start) || isNaN(end)) return null;
+
+          return {
+            id: b.id,
+            title: `${b.service_name || "Service"} — ${b.customer_name || ""}`,
+            start,
+            end,
+            status: b.status,
+          };
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
   }, [bookings]);
 
-  // Tailwind-style event colors based on booking status
   const eventStyleGetter = (event) => {
-    const status = event.status ?? "pending";
-
-    let bg = "bg-yellow-200";
-    if (status === "accepted") bg = "bg-green-200";
-    if (status === "completed") bg = "bg-blue-200";
-    if (["canceled", "rejected"].includes(status)) bg = "bg-red-200";
+    const colors = {
+      accepted: "bg-green-200",
+      pending: "bg-yellow-200",
+      completed: "bg-blue-200",
+      canceled: "bg-red-200",
+      rejected: "bg-red-200",
+    };
 
     return {
-      style: {
-        borderRadius: "6px",
-        border: "none",
-        color: "#111827",
-        padding: "3px",
-      },
-      className: `rbc-event ${bg} border-gray-200`,
+      className: `p-1 rounded ${colors[event.status] || "bg-gray-200"}`,
     };
   };
 
@@ -86,11 +87,8 @@ export default function BookingCalendar({
         events={events}
         startAccessor="start"
         endAccessor="end"
-        defaultView={defaultView}
-        views={["month", "week", "day", "agenda"]}
-        popup
-        selectable
-        onSelectEvent={(ev) => onSelectEvent && onSelectEvent(ev.booking)}
+        defaultView="week"
+        views={["month", "week", "day"]}
         eventPropGetter={eventStyleGetter}
       />
     </div>
