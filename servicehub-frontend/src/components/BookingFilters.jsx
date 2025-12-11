@@ -1,4 +1,3 @@
-// src/components/BookingFilters.jsx
 import React, { useState } from "react";
 
 export default function BookingFilters({ providers = [], onChange }) {
@@ -18,33 +17,41 @@ export default function BookingFilters({ providers = [], onChange }) {
   }
 
   return (
-    <div className="bg-white p-4 rounded-md shadow space-y-3">
+    <div className="space-y-4">
+
       <div>
         <label className="text-sm font-medium">Search</label>
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          className="w-full mt-1 p-2 border rounded"
+          className="w-full mt-1 p-3 border rounded-md focus:ring focus:ring-blue-200"
           placeholder="Search by customer, service..."
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
         <div>
           <label className="text-sm font-medium">Provider</label>
-          <select value={provider} onChange={(e) => setProvider(e.target.value)} className="w-full mt-1 p-2 border rounded">
+          <select
+            className="w-full mt-1 p-3 border rounded-md bg-white"
+            value={provider}
+            onChange={(e) => setProvider(e.target.value)}
+          >
             <option value="">All</option>
             {providers.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
+              <option key={p.id} value={p.id}>{p.name}</option>
             ))}
           </select>
         </div>
 
         <div>
           <label className="text-sm font-medium">Status</label>
-          <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full mt-1 p-2 border rounded">
+          <select
+            className="w-full mt-1 p-3 border rounded-md bg-white"
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+          >
             <option value="">All</option>
             <option value="pending">Pending</option>
             <option value="accepted">Accepted</option>
@@ -55,10 +62,15 @@ export default function BookingFilters({ providers = [], onChange }) {
         </div>
       </div>
 
-      <div className="flex gap-2">
-        <button onClick={apply} className="px-4 py-2 bg-blue-600 text-white rounded">Apply</button>
-        <button onClick={reset} className="px-4 py-2 border rounded">Reset</button>
+      <div className="flex gap-3 pt-2">
+        <button onClick={apply} className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+          Apply
+        </button>
+        <button onClick={reset} className="px-5 py-2 border rounded-md hover:bg-gray-100">
+          Reset
+        </button>
       </div>
+
     </div>
   );
 }
