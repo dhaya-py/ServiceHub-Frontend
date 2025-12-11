@@ -1,8 +1,10 @@
 // src/pages/admin/Bookings.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import BookingCalendar from "../../components/BookingCalendar";
 import BookingFilters from "../../components/BookingFilters";
 import BookingModal from "../../components/BookingModal";
+import BookingList from "../../components/BookingList";
+
 import {
   getBookings,
   getBookingById,
@@ -16,7 +18,9 @@ export default function AdminBookingsPage() {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  // FIX: wrap loadBookings in useCallback to avoid warnings + infinite loops
+  // TAB STATE: "calendar" or "list"
+  const [tab, setTab] = useState("calendar");
+
   const loadBookings = useCallback(async () => {
     try {
       const res = await getBookings({ ...filters });
@@ -29,19 +33,6 @@ export default function AdminBookingsPage() {
   useEffect(() => {
     loadBookings();
   }, [loadBookings]);
-
-  async function loadBookings() {
-    try {
-      const res = await getBookings({ ...filters });
-      setBookings(res?.data || res);
-    } catch (err) {
-      console.error("loadBookings error", err);
-    }
-  }
-
-  useEffect(() => {
-    loadBookings();
-  }, [filters]);
 
   async function handleSelectBooking(booking) {
     try {
@@ -69,16 +60,38 @@ export default function AdminBookingsPage() {
       
       {/* Filters */}
       <div className="max-w-4xl">
-        <BookingFilters providers={providers} onChange={(f) => setFilters(f)} />
+        <BookingFilters providers={providers} onChange={setFilters} />
       </div>
 
-      {/* Calendar only */}
-      <div className="bg-white shadow rounded-lg p-4">
-        <BookingCalendar
-          bookings={bookings}
-          onSelectEvent={handleSelectBooking}
-        />
+      {/* Tabs */}
+      <div className="border-b flex gap-6 text-lg font-medium">
+        <button
+          className={`pb-2 ${tab === "calendar" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-500"}`}
+          onClick={() => setTab("calendar")}
+        >
+          Calendar
+        </button>
+
+        <button
+          className={`pb-2 ${tab === "list" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-500"}`}
+          onClick={() => setTab("list")}
+        >
+          List
+        </button>
       </div>
+
+      {/* CONDITIONAL RENDER */}
+      {tab === "calendar" && (
+        <div className="bg-white shadow rounded-lg p-4">
+          <BookingCalendar bookings={bookings} onSelectEvent={handleSelectBooking} />
+        </div>
+      )}
+
+      {tab === "list" && (
+        <div className="bg-white shadow rounded-lg p-4">
+          <BookingList bookings={bookings} />
+        </div>
+      )}
 
       {/* Modal */}
       <BookingModal
