@@ -9,11 +9,9 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import Customers from "./pages/admin/Customers";
 import CustomerDetail from "./pages/admin/CustomerDetail";
 
-// Legacy bookings list (keep it if you want)
-import Bookings from "./pages/admin/Bookings";
 
-// NEW CALENDAR PAGE
-import AdminBookingsPage from "./pages/admin/BookingsCalendar";
+// UNIFIED BOOKINGS PAGE (Tabs: Calendar + List)
+import AdminBookingsPage from "./pages/admin/Bookings";
 
 function App() {
   return (
@@ -31,9 +29,6 @@ function App() {
 
           {/* Bookings */}
           <Route path="bookings" element={<AdminBookingsPage />} />
-
-          {/* Optional old bookings table/list */}
-          <Route path="bookings/list" element={<Bookings />} />
 
           {/* Customers */}
           <Route path="customers" element={<Customers />} />

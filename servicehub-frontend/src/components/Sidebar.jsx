@@ -42,23 +42,9 @@ export default function Sidebar() {
         <li>
           <NavLink
             to="/admin/bookings"
-            className={({ isActive }) =>
-              isActive ? activeClasses : linkClasses
-            }
+            className="block px-4 py-2 rounded hover:bg-slate-700"
           >
-            Bookings (Calendar)
-          </NavLink>
-        </li>
-
-        {/* Bookings List */}
-        <li>
-          <NavLink
-            to="/admin/bookings/list"
-            className={({ isActive }) =>
-              isActive ? activeClasses : linkClasses
-            }
-          >
-            Bookings List
+            Bookings
           </NavLink>
         </li>
 
