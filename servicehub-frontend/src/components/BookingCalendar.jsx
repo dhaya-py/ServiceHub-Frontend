@@ -45,8 +45,8 @@ export default function BookingCalendar({ bookings = [], onSelectEvent }) {
   }, [bookings]);
 
   return (
-    <div className="w-full border rounded-md shadow bg-white">
-      <div className="h-[600px] overflow-hidden">
+    <div className="w-full">
+      <div className="h-[650px] overflow-hidden rounded-lg">
         <Calendar
           localizer={localizer}
           events={events}
@@ -59,4 +59,5 @@ export default function BookingCalendar({ bookings = [], onSelectEvent }) {
       </div>
     </div>
   );
+  
 }
