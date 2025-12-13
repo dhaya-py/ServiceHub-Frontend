@@ -1,24 +1,19 @@
-// src/pages/admin/Bookings.jsx
-import React, { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import BookingCalendar from "../../components/BookingCalendar";
 import BookingFilters from "../../components/BookingFilters";
+import BookingList from "../../components/BookingList";
 import BookingModal from "../../components/BookingModal";
 import { getBookings, getBookingById, updateBookingStatus } from "../../api/bookings";
 
 export default function AdminBookingsPage() {
   const [filters, setFilters] = useState({});
   const [bookings, setBookings] = useState([]);
+  const [view, setView] = useState("calendar");
   const [selectedBooking, setSelectedBooking] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
 
-  // Load bookings
   const loadBookings = useCallback(async () => {
-    try {
-      const res = await getBookings({ ...filters });
-      setBookings(res?.data || res);
-    } catch (err) {
-      console.error("loadBookings error", err);
-    }
+    const res = await getBookings(filters);
+    setBookings(res?.data || res);
   }, [filters]);
 
   useEffect(() => {
@@ -32,43 +27,63 @@ export default function AdminBookingsPage() {
     } catch {
       setSelectedBooking(booking);
     }
-    setModalOpen(true);
   }
 
   async function handleAction(action, booking) {
-    try {
-      await updateBookingStatus(booking.id, action);
-      setModalOpen(false);
-      loadBookings();
-    } catch (err) {
-      console.error(err);
-      alert("Update failed");
-    }
+    await updateBookingStatus(booking.id, action);
+    setSelectedBooking(null);
+    loadBookings();
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
 
-      {/* Filters Card */}
+      {/* Filters */}
       <div className="bg-white border shadow-sm rounded-lg p-6">
         <BookingFilters onChange={setFilters} />
       </div>
 
       {/* Tabs */}
-      <div className="border-b flex gap-6 text-lg font-medium">
-        <button className="pb-2 border-b-2 border-blue-600 text-blue-600">Calendar</button>
-        {/* <button className="pb-2 text-gray-500 hover:text-gray-700">List</button> */}
+      <div className="flex gap-6 border-b text-lg font-medium">
+        <button
+          onClick={() => setView("calendar")}
+          className={`pb-2 ${
+            view === "calendar"
+              ? "border-b-2 border-blue-600 text-blue-600"
+              : "text-gray-500"
+          }`}
+        >
+          Calendar
+        </button>
+
+        <button
+          onClick={() => setView("list")}
+          className={`pb-2 ${
+            view === "list"
+              ? "border-b-2 border-blue-600 text-blue-600"
+              : "text-gray-500"
+          }`}
+        >
+          List
+        </button>
       </div>
 
-      {/* Calendar */}
+      {/* Content */}
       <div className="bg-white border shadow-sm rounded-lg p-4">
-        <BookingCalendar bookings={bookings} onSelectEvent={handleSelectBooking} />
+        {view === "calendar" ? (
+          <BookingCalendar
+            bookings={bookings}
+            onSelectEvent={handleSelectBooking}
+          />
+        ) : (
+          <BookingList bookings={bookings} />
+        )}
       </div>
 
       {/* Modal */}
       <BookingModal
-        isOpen={modalOpen}
-        onRequestClose={() => setModalOpen(false)}
+        isOpen={!!selectedBooking}
+        onRequestClose={() => setSelectedBooking(null)}
         booking={selectedBooking}
         onAction={handleAction}
       />

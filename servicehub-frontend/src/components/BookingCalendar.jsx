@@ -1,8 +1,6 @@
-// src/components/BookingCalendar.jsx
 import { useMemo } from "react";
-import { Calendar } from "react-big-calendar";
-import { parseISO, format, startOfWeek, getDay } from "date-fns";
-import { dateFnsLocalizer } from "react-big-calendar";
+import { Calendar, dateFnsLocalizer } from "react-big-calendar";
+import { format, parseISO, startOfWeek, getDay } from "date-fns";
 import { enUS } from "date-fns/locale";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -11,8 +9,8 @@ const locales = { "en-US": enUS };
 
 const localizer = dateFnsLocalizer({
   format,
-  parse: (str) => parseISO(str),
-  startOfWeek: (date) => startOfWeek(date, { weekStartsOn: 1 }),
+  parse: parseISO,
+  startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }),
   getDay,
   locales,
 });
@@ -21,43 +19,40 @@ export default function BookingCalendar({ bookings = [], onSelectEvent }) {
   const events = useMemo(() => {
     return bookings
       .map((b) => {
-        try {
-          const start = parseISO(b.start_iso ?? `${b.booking_date}T${b.booking_time}`);
-          const end =
-            b.end_iso
-              ? parseISO(b.end_iso)
-              : new Date(start.getTime() + (b.duration_minutes || 60) * 60000);
+        const start = new Date(
+          b.start_iso ??
+            `${b.booking_date}T${b.booking_time ?? "09:00"}`
+        );
 
-          if (isNaN(start) || isNaN(end)) return null;
+        if (isNaN(start.getTime())) return null;
 
-          return {
-            id: b.id,
-            title: `${b.service_name} — ${b.customer_name}`,
-            start,
-            end,
-            status: b.status,
-          };
-        } catch {
-          return null;
-        }
+        const end = new Date(
+          start.getTime() + (b.duration_minutes ?? 60) * 60000
+        );
+
+        return {
+          id: b.id,
+          title: `${b.service_name} — ${b.customer_name}`,
+          start,
+          end,
+          booking: b,
+        };
       })
       .filter(Boolean);
   }, [bookings]);
 
   return (
-    <div className="w-full">
-      <div className="h-[650px] overflow-hidden rounded-lg">
-        <Calendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          defaultView="week"
-          views={["month", "week", "day"]}
-          onSelectEvent={(ev) => onSelectEvent?.(ev)}
-        />
-      </div>
+    <div className="h-[600px]">
+      <Calendar
+        localizer={localizer}
+        events={events}
+        startAccessor="start"
+        endAccessor="end"
+        defaultView="week"
+        views={["month", "week", "day"]}
+        popup
+        onSelectEvent={(e) => onSelectEvent?.(e.booking)}
+      />
     </div>
   );
-  
 }

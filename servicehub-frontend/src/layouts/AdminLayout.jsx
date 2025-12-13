@@ -4,11 +4,14 @@ import { Outlet } from "react-router-dom";
 
 export default function AdminLayout() {
   return (
-    <div className="min-h-screen flex bg-gray-100">
+    <div className="flex h-screen overflow-hidden bg-gray-100">
       <Sidebar />
+
       <div className="flex-1 flex flex-col">
         <NavBar />
-        <main className="p-8">
+
+        {/* ONLY THIS SCROLLS */}
+        <main className="flex-1 overflow-y-auto p-8">
           <Outlet />
         </main>
       </div>
